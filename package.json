@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "description": "MCP server exposing the SumoSign signing API to AI agents (Claude, ChatGPT, Copilot, and any MCP-compatible client).",
   "license": "MIT",
+  "homepage": "https://sumosign.app",
+  "author": "Cipher Projects (https://cipherprojects.com)",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/meteordefect/sumosign-mcp.git"

@@ -89,6 +89,10 @@ The server registers **15 tools**:
   `webhooks:write`, `audit_logs:read`, `branding:write`, `voice:trigger`. Keys are hashed at
   rest and revocable, and can never complete a signature on a human's behalf.
 
+## About
+
+[SumoSign](https://sumosign.app) is developed by [Cipher Projects](https://cipherprojects.com).
+
 ## License
 
 MIT
