@@ -83,7 +83,37 @@ const fieldShape = z.object({
   recipientIndex: z.number().int().min(0),
 });
 
-const server = new McpServer({ name: 'sumosign', version: '0.1.0' });
+/**
+ * Methodology that /llms.txt gives raw-API agents. Folded into MCP `instructions`
+ * so a client that only connects tools still gets the Field placement ladder —
+ * without this, MCP agents see 15 tools and zero placement guidance.
+ */
+const SERVER_INSTRUCTIONS = `SumoSign signing API for AI agents. Your API key authenticates the sending agent and can never complete a signature — a human recipient always signs via their emailed one-time link.
+
+## Core flow
+1. upload_document (or use an existing template)
+2. Place fields using the Field placement ladder below — never blind-guess coordinates
+3. create_envelope or create_envelope_from_template
+4. preview_envelope when coordinates came from analyze or estimation; confirm with a human before send
+5. send_envelope → poll get_envelope until completed → download_signed_pdf / download_certificate / get_audit_trail
+
+## Field placement ladder (never blind-guess coordinates)
+1. **Template** — repeatable docs; embed {{signature_N}} / {{date_signed_N}} / {{initials_N}} / {{text_N}} / {{checkbox_N}} anchors, then create_template, or reuse list_templates / seed_starter_templates.
+2. **SumoSign analyze** — after upload_document, call analyze_document; confirm/adjust suggestions[] before create_envelope. No OCR — scanned PDFs return hasExtractableText: false.
+3. **Agent-side text extraction** — PyMuPDF / pdfplumber locally if analyze misses labels.
+4. **Embed anchors** — agent-generated PDFs include {{signature_N}} at generation time, then create_template.
+5. **OCR** — if hasExtractableText is false (scanned PDF); agent-side or human review.
+6. **Vision** — last resort only; never auto-send without human confirmation.
+
+Coordinates are PDF user units, origin bottom-left. Off-page fields are rejected with field_out_of_bounds — read page sizes from the error (or analyze pageSizes) and correct.
+
+## The human checkpoint
+Do not attempt to bypass recipient signing. Agents cannot complete signatures; that human affirmative act is what keeps the workflow enforceable.`;
+
+const server = new McpServer(
+  { name: 'sumosign', version: '0.1.1' },
+  { instructions: SERVER_INSTRUCTIONS },
+);
 
 type ToolResult = ReturnType<typeof jsonResult>;
 
