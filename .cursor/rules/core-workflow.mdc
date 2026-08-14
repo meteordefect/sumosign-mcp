@@ -1,0 +1,10 @@
+---
+description: Default workflow for @sumosign/mcp
+alwaysApply: true
+---
+
+# Core Workflow
+
+Published MCP server for SumoSign. Tools wrap REST; API key is agent-only and must never imply signing authority.
+
+Prefer parity with `../app/packages/mcp` when both are updated. Session trace after significant tool/API changes.

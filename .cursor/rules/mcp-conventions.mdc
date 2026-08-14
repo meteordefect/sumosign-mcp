@@ -1,0 +1,12 @@
+---
+description: MCP tool conventions for SumoSign
+globs: src/**/*.{ts,js}
+alwaysApply: false
+---
+
+# MCP Conventions
+
+- Env: `SUMOSIGN_API_KEY` required; `SUMOSIGN_API_URL` optional
+- Tools: upload → analyze → template → create/send envelope → poll → evidence download
+- Never add a “sign document” tool that bypasses recipient consent
+- Keep README tool list in sync with exports
