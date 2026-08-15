@@ -38,7 +38,7 @@ SUMOSIGN_API_KEY=ss_live_... npx @sumosign/mcp
 
 ## Tools
 
-The server registers **15 tools**:
+The server registers **16 tools**:
 
 ### Documents
 
@@ -63,6 +63,7 @@ The server registers **15 tools**:
 
 ### Envelopes — track
 
+- `send_reminder` — re-send the signing email to outstanding recipients. 24h cooldown; spend and spam caps apply. Cannot complete a signature.
 - `get_envelope` — get envelope status including per-recipient progress.
 - `list_envelopes` — list the most recent envelopes for the organization.
 - `void_envelope` — void an envelope before completion; revokes outstanding signing links (audit-logged).

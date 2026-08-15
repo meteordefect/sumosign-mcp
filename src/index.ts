@@ -86,7 +86,7 @@ const fieldShape = z.object({
 /**
  * Methodology that /llms.txt gives raw-API agents. Folded into MCP `instructions`
  * so a client that only connects tools still gets the Field placement ladder —
- * without this, MCP agents see 15 tools and zero placement guidance.
+ * without this, MCP agents see 16 tools and zero placement guidance.
  */
 const SERVER_INSTRUCTIONS = `SumoSign signing API for AI agents. Your API key authenticates the sending agent and can never complete a signature — a human recipient always signs via their emailed one-time link.
 
@@ -95,7 +95,9 @@ const SERVER_INSTRUCTIONS = `SumoSign signing API for AI agents. Your API key au
 2. Place fields using the Field placement ladder below — never blind-guess coordinates
 3. create_envelope or create_envelope_from_template
 4. preview_envelope when coordinates came from analyze or estimation; confirm with a human before send
-5. send_envelope → poll get_envelope until completed → download_signed_pdf / download_certificate / get_audit_trail
+5. send_envelope → poll get_envelope until recipients show status sent
+6. send_reminder to nudge outstanding signers (24h cooldown per recipient; spend and spam caps apply). Only humans can sign — this tool cannot complete a signature.
+7. poll get_envelope until completed → download_signed_pdf / download_certificate / get_audit_trail
 
 ## Field placement ladder (never blind-guess coordinates)
 1. **Template** — repeatable docs; embed {{signature_N}} / {{date_signed_N}} / {{initials_N}} / {{text_N}} / {{checkbox_N}} anchors, then create_template, or reuse list_templates / seed_starter_templates.
@@ -255,6 +257,14 @@ registerTool(
         idempotencyKey ?? randomUUID(),
       ),
     ),
+);
+
+registerTool(
+  'send_reminder',
+  'Re-send the signing email to outstanding recipients of a sent envelope. Issues fresh signing links; original links keep working. Returns { reminded, skipped } — skipped reasons include cooldown (24h), lifetime_cap (10), inbox_daily_cap, org_daily_cap, platform_daily_cap, suppressed. Only humans can sign — this tool cannot complete a signature.',
+  { envelopeId: z.string().uuid() },
+  async ({ envelopeId }) =>
+    jsonResult(await apiJson('POST', `/v1/envelopes/${envelopeId}/remind`)),
 );
 
 registerTool(
