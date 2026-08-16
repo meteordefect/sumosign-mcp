@@ -96,7 +96,7 @@ const SERVER_INSTRUCTIONS = `SumoSign signing API for AI agents. Your API key au
 3. create_envelope or create_envelope_from_template
 4. preview_envelope when coordinates came from analyze or estimation; confirm with a human before send
 5. send_envelope → poll get_envelope until recipients show status sent
-6. send_reminder to nudge outstanding signers (24h cooldown per recipient; spend and spam caps apply). Only humans can sign — this tool cannot complete a signature.
+6. Optional: send_reminder({ envelopeId }) if signers are still outstanding (once per recipient per 24h; skipped is not an error). Only humans can sign — this tool cannot complete a signature.
 7. poll get_envelope until completed → download_signed_pdf / download_certificate / get_audit_trail
 
 ## Field placement ladder (never blind-guess coordinates)
@@ -261,7 +261,7 @@ registerTool(
 
 registerTool(
   'send_reminder',
-  'Re-send the signing email to outstanding recipients of a sent envelope. Issues fresh signing links; original links keep working. Returns { reminded, skipped } — skipped reasons include cooldown (24h), lifetime_cap (10), inbox_daily_cap, org_daily_cap, platform_daily_cap, suppressed. Only humans can sign — this tool cannot complete a signature.',
+  'Re-send the signing email to outstanding signers of a sent envelope. Empty input besides envelopeId. Issues a fresh link; old links still work. Returns { reminded, skipped } — skipped is success (cooldown, caps, already signed), not an error. Do not retry in a loop. Only humans can sign.',
   { envelopeId: z.string().uuid() },
   async ({ envelopeId }) =>
     jsonResult(await apiJson('POST', `/v1/envelopes/${envelopeId}/remind`)),
