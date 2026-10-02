@@ -15,6 +15,19 @@ No install step is required; run it directly with `npx`:
 SUMOSIGN_API_KEY=ss_live_... npx @sumosign/mcp
 ```
 
+### Hosted MCP (no local install)
+
+If you do not want a local stdio process, attach the hosted server instead:
+
+```
+URL:     https://mcp.sumosign.app/mcp
+Header:  Authorization: Bearer ss_live_YOUR_KEY
+```
+
+Same URL works in Grok Bot (Plugins → Add custom), grok.com Connectors, Claude (OAuth via the Connectors Directory), and any MCP host that speaks Streamable HTTP. Create a scoped key at [app.sumosign.app/keys](https://app.sumosign.app/keys).
+
+The stdio instructions below remain the primary path for Cursor and other local agents.
+
 ### Configuration
 
 | Env var | Required | Default | Description |
